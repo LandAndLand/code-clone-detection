@@ -44,7 +44,7 @@ class ASTPath:
 
   @staticmethod
   def build_paths_c(node, paths, path_so_far):
-    path_so_far += node.__class__.__name__ + "-"
+    path_so_far += node.__class__.__name__
 
     try:
       for child_node in node.ext:
@@ -59,9 +59,13 @@ class ASTPath:
             ASTPath.build_paths_c(child_node, paths, path_so_far)
         except AttributeError:
           try:
-            if path_so_far.endswith("If-"):
-              print(node.iftrue.children) # Make it work
+            for child_node in node.iftrue.block_items:
+              ASTPath.build_paths_c(child_node, paths, path_so_far)
+            for child_node in node.iffalse.block_items:
+              ASTPath.build_paths_c(child_node, paths, path_so_far)
           except AttributeError:
-            if path_so_far:
-              paths.append(path_so_far)
+            pass
+
+    if path_so_far:
+      paths.append(path_so_far)
 

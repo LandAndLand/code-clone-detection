@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from ASTPath import ASTPath
-from CodePathsStore import CodePathsStore
+from .ASTPath import ASTPath
+from .CodePathsStore import CodePathsStore
 
 class CodeComparer:
 

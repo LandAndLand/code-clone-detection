@@ -113,7 +113,7 @@ class SuffixTree(object):
             top = min(curr_index, edge.last_char_index)
             s += self.string[edge.first_char_index:top+1] + "\n"
         return s
-            
+
     def _add_prefix(self, last_char_index):
         """The core construction method.
         """

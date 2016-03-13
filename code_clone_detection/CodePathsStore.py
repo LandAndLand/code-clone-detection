@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 from os import path, walk
-from ASTPath import ASTPath
-from suffix_tree import SuffixTree
+from .ASTPath import ASTPath
+from .suffix_tree import SuffixTree
 import pickle
 
 class CodePathsStore:
