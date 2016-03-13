@@ -37,7 +37,7 @@ class ASTPath:
         path_so_far += type(field[1]).__name__
 
     for child_node in ast.iter_child_nodes(node):
-      ASTPath.build_paths(child_node, paths, path_so_far)
+      ASTPath.build_paths_py(child_node, paths, path_so_far)
 
     if path_so_far:
       paths.append(path_so_far)

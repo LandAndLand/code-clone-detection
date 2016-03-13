@@ -153,7 +153,7 @@ class SuffixTree(object):
     def _insert_edge(self, edge):
         self.edges[(edge.source_node_index, self.string[edge.first_char_index])] = edge
 
-
+    def _remove_edge(self, edge):
         self.edges.pop((edge.source_node_index, self.string[edge.first_char_index]))
 
     def _split_edge(self, edge, suffix):
