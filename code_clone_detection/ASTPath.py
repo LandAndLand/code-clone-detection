@@ -46,26 +46,16 @@ class ASTPath:
   def build_paths_c(node, paths, path_so_far):
     path_so_far += node.__class__.__name__
 
-    try:
-      for child_node in node.ext:
-        ASTPath.build_paths_c(child_node, paths, path_so_far)
-    except AttributeError:
-      try:
-        for child_node in node.body.block_items:
-          ASTPath.build_paths_c(child_node, paths, path_so_far)
-      except AttributeError:
-        try:
-          for child_node in node.stmt.block_items:
-            ASTPath.build_paths_c(child_node, paths, path_so_far)
-        except AttributeError:
-          try:
-            for child_node in node.iftrue.block_items:
-              ASTPath.build_paths_c(child_node, paths, path_so_far)
-            for child_node in node.iffalse.block_items:
-              ASTPath.build_paths_c(child_node, paths, path_so_far)
-          except AttributeError:
-            pass
+   for a in node.attr_names :
+      if(getattr(node, a) and 'name' not in a and node.children()):
+        path_so_far += str(getattr(node, a))
 
-    if path_so_far:
-      paths.append(path_so_far)
+   for(child_name, child) in node.children() :
+      ASTPath.build_paths_c(child, paths, path_so_far)
+
+   if path_so_far:
+     if path_so_far not in paths:
+       path_so_far = path_so_far[7:]
+       print(path_so_far)
+       paths.append(path_so_far)
 
