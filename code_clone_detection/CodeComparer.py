@@ -15,15 +15,11 @@ class CodeComparer:
 
     matches = {}
 
-    for treepath in paths:
+    for filename, suffixtree in self.code_paths_store.get_code_paths():
+      print("Searching in " + filename)
 
-      match_files = []
-      for _filename, _suffixtree in self.code_paths_store.paths.items():
-        if _suffixtree.find_substring(treepath) > -1:
-          match_files.append(_filename)
-
-      if match_files is not None:
-        for filename in match_files:
+      for treepath in paths:
+        if suffixtree.find_substring(treepath) > -1:
           if filename not in matches:
             matches[filename] = 1
           else:

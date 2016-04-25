@@ -10,8 +10,7 @@ class CodePathsStore:
   def __init__(self, codebase_path, file_extension):
     self.codebase_path = codebase_path
     self.file_extension = file_extension
-
-    self.paths = self.get_code_paths()
+    self.make_code_paths_for_directory()
 
   def make_code_paths_for_directory(self):
     for root, dirs, files in walk(self.codebase_path):
@@ -28,18 +27,14 @@ class CodePathsStore:
       pickle.dump(SuffixTree(string_paths), f)
 
   def get_code_paths(self):
-    self.make_code_paths_for_directory()
-    paths = {}
-
     for root, dirs, files in walk(self.codebase_path):
       for filename in files:
         cdp_filename = self.cdp_file(root, filename)
         if filename.endswith(self.file_extension):
           if path.isfile(cdp_filename):
             with open(cdp_filename, 'rb') as f:
-              paths[path.join(root, filename)] = pickle.load(f)
-
-    return paths
+              yield path.join(root, filename), pickle.load(f)
+    raise StopIteration
 
   def cdp_file(self, root, filename):
     return path.join(root, "."+filename+".cdp")
