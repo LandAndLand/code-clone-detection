@@ -11,32 +11,35 @@ class CodePathsStore:
     self.codebase_path = codebase_path
     self.file_extension = file_extension
 
-    self.code_paths_filepath = path.join(codebase_path, ".cdp-" + self.file_extension + ".pkl")
+    self.paths = self.get_code_paths()
 
-    if not path.isfile(self.code_paths_filepath):
-      self.make_code_paths_file()
-
-    self.paths = self.get_code_paths_from_file()
-
-
-  def make_code_paths_file(self):
-    paths = {}
+  def make_code_paths_for_directory(self):
     for root, dirs, files in walk(self.codebase_path):
       for filename in files:
         if filename.endswith(self.file_extension):
-          filename_path = path.join(root, filename)
-          filepaths = ASTPath(filename_path, self.file_extension).paths
-          string_paths = "".join(filepaths)
-          paths[filename_path] = SuffixTree(string_paths)
+          if not path.isfile(self.cdp_file(root, filename)):
+            self.make_code_paths_from_file(root, filename)
 
-    with open(self.code_paths_filepath, "wb") as code_paths_file:
-      pickle.dump(paths, code_paths_file)
+  def make_code_paths_from_file(self, root, filename):
+    filename_path = path.join(root, filename)
+    filepaths = ASTPath(filename_path, self.file_extension).paths
+    string_paths = "".join(filepaths)
+    with open(self.cdp_file(root, filename), 'wb') as f:
+      pickle.dump(SuffixTree(string_paths), f)
 
-
-  def get_code_paths_from_file(self):
+  def get_code_paths(self):
+    self.make_code_paths_for_directory()
     paths = {}
 
-    with open(self.code_paths_filepath, 'rb') as f:
-      paths = pickle.load(f)
+    for root, dirs, files in walk(self.codebase_path):
+      for filename in files:
+        cdp_filename = self.cdp_file(root, filename)
+        if filename.endswith(self.file_extension):
+          if path.isfile(cdp_filename):
+            with open(cdp_filename, 'rb') as f:
+              paths[path.join(root, filename)] = pickle.load(f)
 
     return paths
+
+  def cdp_file(self, root, filename):
+    return path.join(root, "."+filename+".cdp")

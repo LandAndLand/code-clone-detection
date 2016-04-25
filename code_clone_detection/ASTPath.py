@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import ast
-from pycparser import c_parser
+from pycparser import c_parser, parse_file
 
 class ASTPath:
 
@@ -18,13 +18,13 @@ class ASTPath:
   @staticmethod
   def get_paths(code, file_extension):
     paths = []
-
     if file_extension == '.py':
         code_ast = ast.parse(code)
         ASTPath.build_paths_py(code_ast, paths, "")
     elif file_extension == '.c':
         parser = c_parser.CParser()
-        code_ast = parser.parse(code, filename='<none>')
+#        code_ast = parser.parse(code, filename='<none>')
+        code_ast = parse_file(code, True)
         ASTPath.build_paths_c(code_ast, paths, "")
 
     return paths
@@ -46,16 +46,14 @@ class ASTPath:
   def build_paths_c(node, paths, path_so_far):
     path_so_far += node.__class__.__name__
 
-   for a in node.attr_names :
+    for a in node.attr_names:
       if(getattr(node, a) and 'name' not in a and node.children()):
         path_so_far += str(getattr(node, a))
 
-   for(child_name, child) in node.children() :
+    for(child_name, child) in node.children() :
       ASTPath.build_paths_c(child, paths, path_so_far)
 
-   if path_so_far:
-     if path_so_far not in paths:
-       path_so_far = path_so_far[7:]
-       print(path_so_far)
-       paths.append(path_so_far)
-
+    if path_so_far:
+      if path_so_far not in paths:
+        path_so_far = path_so_far[7:]
+        paths.append(path_so_far)
